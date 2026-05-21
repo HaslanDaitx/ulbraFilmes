@@ -70,6 +70,7 @@ class FilmeRepository implements IFilmeRepository {
     return DetalheFilmeEntity.fromMap(data);
   }
 
+  @override
   Future<List<FilmeEntity>> listarFilmesPopulares() async {
     final url = Uri.https(
       _authority,

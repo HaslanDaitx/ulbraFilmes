@@ -40,10 +40,6 @@ class _DetalheFilmePageState extends State<DetalheFilmePage> {
     setState(() {});
   }
 
-  bool _possuiPoster(DetalheFilmeEntity filme) {
-    return filme.posterUrl.isNotEmpty;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
