@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../shared/theme/colors.dart';
 import '../controllers/detalhe_filme_controller.dart';
-import '../entity/filme_entity.dart';
+import '../entity/detalhe_filme_entity.dart';
 import '../repositories/filme_repository.dart';
 import '../services/filme_service.dart';
 
@@ -135,9 +135,7 @@ class _DetalheFilmePageState extends State<DetalheFilmePage> {
           ),
           _InfoLinha(
             label: 'Lançamento',
-            value: filme.dataLancamento.isEmpty
-                ? 'Não informado'
-                : filme.dataLancamento,
+            value: filme.dataLancamentoFormatada,
           ),
         ],
       ),

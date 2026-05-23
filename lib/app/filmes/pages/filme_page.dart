@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../shared/theme/colors.dart';
 import '../controllers/filme_controller.dart';
+import '../entity/tipo_lista_filme_enum.dart';
 import '../repositories/filme_repository.dart';
 import '../services/filme_service.dart';
 import '../widgets/campo_busca.dart';
@@ -25,6 +27,7 @@ class _FilmesPageState extends State<FilmesPage> {
 
   late final FilmeController _controller;
 
+  TipoListaFilmes _tipoSelecionado = TipoListaFilmes.populares;
   Timer? _debounce;
 
   @override
@@ -36,7 +39,7 @@ class _FilmesPageState extends State<FilmesPage> {
 
     _controller = FilmeController(service);
 
-    _buscarFilmesPopulares();
+    _listarFilmes();
   }
 
   @override
@@ -46,8 +49,19 @@ class _FilmesPageState extends State<FilmesPage> {
     super.dispose();
   }
 
+  void _limparPesquisa() {
+    _debounce?.cancel();
+    _pesquisaController.clear();
+    _listarFilmes();
+  }
+
   void _onPesquisaAlterada(String texto) {
     _debounce?.cancel();
+
+    if (texto.trim().isEmpty) {
+      _listarFilmes();
+      return;
+    }
 
     _debounce = Timer(_debounceDuration, _buscarFilmes);
   }
@@ -60,12 +74,24 @@ class _FilmesPageState extends State<FilmesPage> {
     setState(() {});
   }
 
-  Future<void> _buscarFilmesPopulares() async {
-    await _controller.listarFilmesPopulares();
+  Future<void> _listarFilmes() async {
+    await _controller.listarFilmes(_tipoSelecionado);
 
     if (!mounted) return;
 
     setState(() {});
+  }
+
+  Future<void> _trocarTipoLista(TipoListaFilmes tipo) async {
+    if (_tipoSelecionado == tipo && _pesquisaController.text.isEmpty) {
+      return;
+    }
+
+    _debounce?.cancel();
+    _tipoSelecionado = tipo;
+    _pesquisaController.clear();
+
+    await _listarFilmes();
   }
 
   @override
@@ -80,8 +106,11 @@ class _FilmesPageState extends State<FilmesPage> {
               CampoBusca(
                 controller: _pesquisaController,
                 onBuscar: _buscarFilmes,
+                onLimpar: _limparPesquisa,
                 onChanged: _onPesquisaAlterada,
               ),
+              const SizedBox(height: 12),
+              _buildFiltros(),
               const SizedBox(height: _pagePadding),
               Expanded(
                 child: _buildConteudo(),
@@ -106,16 +135,41 @@ class _FilmesPageState extends State<FilmesPage> {
           },
         ),
       ),
-      title: const Text(
-        'ULBRA Filmes',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 22,
+      title: GestureDetector(
+        onTap: _voltarInicio,
+        child: const Text(
+          'ULBRA Filmes',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+          ),
         ),
       ),
       actions: const [
         SizedBox(width: 72),
+      ],
+    );
+  }
+
+  Widget _buildFiltros() {
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        _buildFiltroChip(
+          titulo: 'Avaliados',
+          tipo: TipoListaFilmes.maisAvaliados,
+        ),
+        _buildFiltroChip(
+          titulo: 'Cartaz',
+          tipo: TipoListaFilmes.emCartaz,
+        ),
+        _buildFiltroChip(
+          titulo: 'Tendências',
+          tipo: TipoListaFilmes.tendencias,
+        ),
       ],
     );
   }
@@ -150,5 +204,42 @@ class _FilmesPageState extends State<FilmesPage> {
         return FilmeCard(filme: filme);
       },
     );
+  }
+
+  Widget _buildFiltroChip({
+    required String titulo,
+    required TipoListaFilmes tipo,
+  }) {
+    final selecionado = _tipoSelecionado == tipo;
+
+    return ChoiceChip(
+      label: Text(titulo),
+      selected: selecionado,
+      onSelected: (_) => _trocarTipoLista(tipo),
+      selectedColor: AppColors.verdePrincipal,
+      backgroundColor: AppColors.dourado.withValues(alpha: 0.20),
+      labelStyle: TextStyle(
+        color: selecionado
+            ? AppColors.branco
+            : AppColors.textoPrincipal,
+        fontWeight: FontWeight.w600,
+      ),
+      side: BorderSide(
+        color: selecionado
+            ? AppColors.verdePrincipal
+            : AppColors.dourado,
+      ),
+      showCheckmark: false,
+    );
+  }
+
+  Future<void> _voltarInicio() async {
+    _debounce?.cancel();
+
+    _pesquisaController.clear();
+
+    _tipoSelecionado = TipoListaFilmes.populares;
+
+    await _listarFilmes();
   }
 }

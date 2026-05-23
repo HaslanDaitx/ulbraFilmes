@@ -1,4 +1,4 @@
-import '../entity/filme_entity.dart';
+import '../entity/detalhe_filme_entity.dart';
 import '../services/filme_service_interface.dart';
 
 class DetalheFilmeController {

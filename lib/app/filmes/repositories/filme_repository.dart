@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../entity/detalhe_filme_entity.dart';
 import '../entity/filme_entity.dart';
+import '../entity/tipo_lista_filme_enum.dart';
 import 'filme_repository_interface.dart';
 
 class FilmeRepository implements IFilmeRepository {
@@ -71,10 +73,32 @@ class FilmeRepository implements IFilmeRepository {
   }
 
   @override
-  Future<List<FilmeEntity>> listarFilmesPopulares() async {
+  Future<List<FilmeEntity>> listarFilmes(
+      TipoListaFilmes tipo,
+      ) async {
+    String path;
+
+    switch (tipo) {
+      case TipoListaFilmes.maisAvaliados:
+        path = '/3/movie/top_rated';
+        break;
+
+      case TipoListaFilmes.emCartaz:
+        path = '/3/movie/now_playing';
+        break;
+
+      case TipoListaFilmes.tendencias:
+        path = '/3/trending/movie/day';
+        break;
+
+      case TipoListaFilmes.populares:
+        path = '/3/movie/popular';
+        break;
+    }
+
     final url = Uri.https(
       _authority,
-      '/3/movie/popular',
+      path,
       {
         'language': 'pt-BR',
         'page': '1',
@@ -84,7 +108,7 @@ class FilmeRepository implements IFilmeRepository {
     final response = await http.get(url, headers: _headers);
 
     if (response.statusCode != 200) {
-      throw Exception('Erro ao buscar filmes populares');
+      throw Exception('Erro ao carregar filmes');
     }
 
     final data = jsonDecode(response.body);

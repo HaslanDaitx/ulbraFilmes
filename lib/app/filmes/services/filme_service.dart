@@ -1,4 +1,6 @@
+import '../entity/detalhe_filme_entity.dart';
 import '../entity/filme_entity.dart';
+import '../entity/tipo_lista_filme_enum.dart';
 import '../repositories/filme_repository_interface.dart';
 import 'filme_service_interface.dart';
 
@@ -30,7 +32,9 @@ class FilmeService implements IFilmeService {
   }
 
   @override
-  Future<List<FilmeEntity>> listarFilmesPopulares() {
-    return _filmeRepository.listarFilmesPopulares();
+  Future<List<FilmeEntity>> listarFilmes(
+      TipoListaFilmes tipo,
+      ) {
+    return _filmeRepository.listarFilmes(tipo);
   }
 }

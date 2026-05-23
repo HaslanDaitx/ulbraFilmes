@@ -46,13 +46,14 @@ class FilmeCard extends StatelessWidget {
               ),
             ),
             Expanded(
-              flex: 3,
+              flex: 4,
               child: Padding(
-                padding: const EdgeInsets.all(15),
+                padding: const EdgeInsets.all(12),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
+                      textAlign: TextAlign.center,
                       filme.titulo,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -87,7 +88,7 @@ class FilmeCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     const Row(
                       children: [
                         Text(

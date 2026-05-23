@@ -1,4 +1,5 @@
 import '../entity/filme_entity.dart';
+import '../entity/tipo_lista_filme_enum.dart';
 import '../services/filme_service_interface.dart';
 
 class FilmeController {
@@ -36,19 +37,21 @@ class FilmeController {
     }
   }
 
-  Future<void> listarFilmesPopulares() async {
+  Future<void> listarFilmes(
+      TipoListaFilmes tipo,
+      ) async {
     isLoading = true;
     mensagem = '';
 
     try {
-      filmes = await _filmeService.listarFilmesPopulares();
+      filmes = await _filmeService.listarFilmes(tipo);
 
       if (filmes.isEmpty) {
         mensagem = 'Nenhum filme encontrado';
       }
     } catch (e) {
       filmes = [];
-      mensagem = 'Erro ao carregar filmes populares';
+      mensagem = 'Erro ao carregar filmes';
     } finally {
       isLoading = false;
     }
