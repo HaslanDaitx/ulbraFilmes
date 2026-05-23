@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../shared/theme/colors.dart';
 import '../controllers/filme_controller.dart';
-import '../entity/tipo_lista_filme_enum.dart';
+import '../entity/enum/tipo_lista_filme_enum.dart';
 import '../repositories/filme_repository.dart';
 import '../services/filme_service.dart';
 import '../widgets/campo_busca.dart';

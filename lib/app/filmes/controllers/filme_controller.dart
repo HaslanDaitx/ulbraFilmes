@@ -1,5 +1,5 @@
 import '../entity/filme_entity.dart';
-import '../entity/tipo_lista_filme_enum.dart';
+import '../entity/enum/tipo_lista_filme_enum.dart';
 import '../services/filme_service_interface.dart';
 
 class FilmeController {

@@ -1,6 +1,6 @@
 import '../entity/detalhe_filme_entity.dart';
 import '../entity/filme_entity.dart';
-import '../entity/tipo_lista_filme_enum.dart';
+import '../entity/enum/tipo_lista_filme_enum.dart';
 import '../repositories/filme_repository_interface.dart';
 import 'filme_service_interface.dart';
 
