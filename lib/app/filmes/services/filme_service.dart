@@ -32,9 +32,7 @@ class FilmeService implements IFilmeService {
   }
 
   @override
-  Future<List<FilmeEntity>> listarFilmes(
-      TipoListaFilmes tipo,
-      ) {
+  Future<List<FilmeEntity>> listarFilmes(TipoListaFilmes tipo) {
     return _filmeRepository.listarFilmes(tipo);
   }
 }

@@ -8,10 +8,7 @@ import '../services/filme_service.dart';
 class DetalheFilmePage extends StatefulWidget {
   final String id;
 
-  const DetalheFilmePage({
-    super.key,
-    required this.id,
-  });
+  const DetalheFilmePage({super.key, required this.id});
 
   @override
   State<DetalheFilmePage> createState() => _DetalheFilmePageState();
@@ -50,31 +47,24 @@ class _DetalheFilmePageState extends State<DetalheFilmePage> {
         ),
       ),
       body: SafeArea(
-        child: _buildConteudo(),
+        child: Padding(padding: const EdgeInsets.all(12), child: _buildBody()),
       ),
     );
   }
 
-  Widget _buildConteudo() {
+  Widget _buildBody() {
     if (_controller.isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_controller.filme == null) {
-      return Center(
-        child: Text(_controller.mensagem),
-      );
+      return Center(child: Text(_controller.mensagem));
     }
 
     final filme = _controller.filme!;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 20,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -96,10 +86,7 @@ class _DetalheFilmePageState extends State<DetalheFilmePage> {
             spacing: 14,
             runSpacing: 8,
             children: [
-              _InfoIcone(
-                icon: Icons.calendar_month,
-                texto: filme.ano,
-              ),
+              _InfoIcone(icon: Icons.calendar_month, texto: filme.ano),
               _InfoIcone(
                 icon: Icons.access_time,
                 texto: filme.duracaoFormatada,
@@ -109,10 +96,7 @@ class _DetalheFilmePageState extends State<DetalheFilmePage> {
                 texto: filme.notaFormatada,
                 iconColor: AppColors.dourado,
               ),
-              _InfoIcone(
-                icon: Icons.category,
-                texto: filme.generosFormatados,
-              ),
+              _InfoIcone(icon: Icons.category, texto: filme.generosFormatados),
             ],
           ),
           const SizedBox(height: 28),
@@ -121,22 +105,13 @@ class _DetalheFilmePageState extends State<DetalheFilmePage> {
           Text(
             filme.sinopse.isEmpty ? 'Sinopse não informada.' : filme.sinopse,
             textAlign: TextAlign.justify,
-            style: const TextStyle(
-              fontSize: 15,
-              height: 1.5,
-            ),
+            style: const TextStyle(fontSize: 15, height: 1.5),
           ),
           const SizedBox(height: 28),
           const _TituloSecao(texto: 'Informações'),
           const SizedBox(height: 10),
-          _InfoLinha(
-            label: 'Título original',
-            value: filme.tituloOriginal,
-          ),
-          _InfoLinha(
-            label: 'Lançamento',
-            value: filme.dataLancamentoFormatada,
-          ),
+          _InfoLinha(label: 'Título original', value: filme.tituloOriginal),
+          _InfoLinha(label: 'Lançamento', value: filme.dataLancamentoFormatada),
         ],
       ),
     );
@@ -146,9 +121,7 @@ class _DetalheFilmePageState extends State<DetalheFilmePage> {
 class _PosterFilme extends StatelessWidget {
   final DetalheFilmeEntity filme;
 
-  const _PosterFilme({
-    required this.filme,
-  });
+  const _PosterFilme({required this.filme});
 
   bool get possuiPoster => filme.posterUrl.isNotEmpty;
 
@@ -158,15 +131,29 @@ class _PosterFilme extends StatelessWidget {
       borderRadius: BorderRadius.circular(18),
       child: possuiPoster
           ? Image.network(
-        filme.posterUrl,
-        height: 360,
-        width: double.infinity,
-        fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) {
-          return const _PosterIndisponivel();
-        },
-      )
+              filme.posterUrl,
+              height: 360,
+              width: double.infinity,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return const _PosterIndisponivel();
+              },
+            )
           : const _PosterIndisponivel(),
+    );
+  }
+}
+
+class _PosterIndisponivel extends StatelessWidget {
+  const _PosterIndisponivel();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 330,
+      width: double.infinity,
+      color: AppColors.cinzaClaro,
+      child: const Icon(Icons.movie, size: 70),
     );
   }
 }
@@ -174,9 +161,7 @@ class _PosterFilme extends StatelessWidget {
 class _TituloSecao extends StatelessWidget {
   final String texto;
 
-  const _TituloSecao({
-    required this.texto,
-  });
+  const _TituloSecao({required this.texto});
 
   @override
   Widget build(BuildContext context) {
@@ -194,14 +179,35 @@ class _TituloSecao extends StatelessWidget {
   }
 }
 
+class _InfoIcone extends StatelessWidget {
+  final IconData icon;
+  final String texto;
+  final Color? iconColor;
+
+  const _InfoIcone({required this.icon, required this.texto, this.iconColor});
+
+  @override
+  Widget build(BuildContext context) {
+    if (texto.isEmpty || texto == 'N/A' || texto == 'Não informado') {
+      return const SizedBox.shrink();
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 16, color: iconColor ?? AppColors.textoSecundario),
+        const SizedBox(width: 4),
+        Text(texto, style: const TextStyle(fontSize: 13)),
+      ],
+    );
+  }
+}
+
 class _InfoLinha extends StatelessWidget {
   final String label;
   final String value;
 
-  const _InfoLinha({
-    required this.label,
-    required this.value,
-  });
+  const _InfoLinha({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -221,65 +227,9 @@ class _InfoLinha extends StatelessWidget {
               color: AppColors.textoPrincipal,
             ),
           ),
-          Expanded(
-            child: Text(value),
-          ),
+          Expanded(child: Text(value)),
         ],
       ),
-    );
-  }
-}
-
-class _PosterIndisponivel extends StatelessWidget {
-  const _PosterIndisponivel();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 330,
-      width: double.infinity,
-      color: AppColors.cinzaClaro,
-      child: const Icon(
-        Icons.movie,
-        size: 70,
-      ),
-    );
-  }
-}
-
-class _InfoIcone extends StatelessWidget {
-  final IconData icon;
-  final String texto;
-  final Color? iconColor;
-
-  const _InfoIcone({
-    required this.icon,
-    required this.texto,
-    this.iconColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (texto.isEmpty || texto == 'N/A' || texto == 'Não informado') {
-      return const SizedBox.shrink();
-    }
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          size: 16,
-          color: iconColor ?? AppColors.textoSecundario,
-        ),
-        const SizedBox(width: 4),
-        Text(
-          texto,
-          style: const TextStyle(
-            fontSize: 13,
-          ),
-        ),
-      ],
     );
   }
 }

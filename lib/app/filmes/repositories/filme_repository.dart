@@ -14,27 +14,23 @@ class FilmeRepository implements IFilmeRepository {
   static const String _authority = 'api.themoviedb.org';
 
   Map<String, String> get _headers {
-    return {
-      'Authorization': 'Bearer $_token',
-      'accept': 'application/json',
-    };
+    return {'Authorization': 'Bearer $_token', 'accept': 'application/json'};
   }
 
   @override
   Future<List<FilmeEntity>> buscarFilmes(String pesquisa) async {
-    if (pesquisa.trim().isEmpty) {
+    final pesquisaTratada = pesquisa.trim();
+
+    if (pesquisaTratada.isEmpty) {
       return [];
     }
 
-    final url = Uri.https(
-      _authority,
-      '/3/search/movie',
-      {
-        'query': pesquisa.trim(),
-        'language': 'pt-BR',
-        'page': '1',
-      },
-    );
+    final url = Uri.https(_authority, '/3/search/movie', {
+      'query': pesquisaTratada,
+      'language': 'pt-BR',
+      'page': '1',
+      'include_adult': 'false',
+    });
 
     final response = await http.get(url, headers: _headers);
 
@@ -42,24 +38,12 @@ class FilmeRepository implements IFilmeRepository {
       throw Exception('Erro ao buscar filmes');
     }
 
-    final data = jsonDecode(response.body);
-
-    final List filmesJson = data['results'] ?? [];
-
-    return filmesJson
-        .map((filmeJson) => FilmeEntity.fromMap(filmeJson))
-        .toList();
+    return _mapearListaFilmes(response.body);
   }
 
   @override
   Future<DetalheFilmeEntity> buscarDetalhesFilme(String id) async {
-    final url = Uri.https(
-      _authority,
-      '/3/movie/$id',
-      {
-        'language': 'pt-BR',
-      },
-    );
+    final url = Uri.https(_authority, '/3/movie/$id', {'language': 'pt-BR'});
 
     final response = await http.get(url, headers: _headers);
 
@@ -73,37 +57,14 @@ class FilmeRepository implements IFilmeRepository {
   }
 
   @override
-  Future<List<FilmeEntity>> listarFilmes(
-      TipoListaFilmes tipo,
-      ) async {
-    String path;
+  Future<List<FilmeEntity>> listarFilmes(TipoListaFilmes tipo) async {
+    final path = _getPathPorTipo(tipo);
 
-    switch (tipo) {
-      case TipoListaFilmes.maisAvaliados:
-        path = '/3/movie/top_rated';
-        break;
-
-      case TipoListaFilmes.emCartaz:
-        path = '/3/movie/now_playing';
-        break;
-
-      case TipoListaFilmes.tendencias:
-        path = '/3/trending/movie/day';
-        break;
-
-      case TipoListaFilmes.populares:
-        path = '/3/movie/popular';
-        break;
-    }
-
-    final url = Uri.https(
-      _authority,
-      path,
-      {
-        'language': 'pt-BR',
-        'page': '1',
-      },
-    );
+    final url = Uri.https(_authority, path, {
+      'language': 'pt-BR',
+      'page': '1',
+      'include_adult': 'false',
+    });
 
     final response = await http.get(url, headers: _headers);
 
@@ -111,11 +72,29 @@ class FilmeRepository implements IFilmeRepository {
       throw Exception('Erro ao carregar filmes');
     }
 
-    final data = jsonDecode(response.body);
+    return _mapearListaFilmes(response.body);
+  }
+
+  String _getPathPorTipo(TipoListaFilmes tipo) {
+    switch (tipo) {
+      case TipoListaFilmes.maisAvaliados:
+        return '/3/movie/top_rated';
+      case TipoListaFilmes.emCartaz:
+        return '/3/movie/now_playing';
+      case TipoListaFilmes.tendencias:
+        return '/3/trending/movie/day';
+      case TipoListaFilmes.populares:
+        return '/3/movie/popular';
+    }
+  }
+
+  List<FilmeEntity> _mapearListaFilmes(String body) {
+    final data = jsonDecode(body);
 
     final List filmesJson = data['results'] ?? [];
 
     return filmesJson
+        .where((filmeJson) => filmeJson['adult'] != true)
         .map((filmeJson) => FilmeEntity.fromMap(filmeJson))
         .toList();
   }

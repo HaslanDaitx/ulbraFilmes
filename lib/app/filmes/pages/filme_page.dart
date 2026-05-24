@@ -49,23 +49,6 @@ class _FilmesPageState extends State<FilmesPage> {
     super.dispose();
   }
 
-  void _limparPesquisa() {
-    _debounce?.cancel();
-    _pesquisaController.clear();
-    _listarFilmes();
-  }
-
-  void _onPesquisaAlterada(String texto) {
-    _debounce?.cancel();
-
-    if (texto.trim().isEmpty) {
-      _listarFilmes();
-      return;
-    }
-
-    _debounce = Timer(_debounceDuration, _buscarFilmes);
-  }
-
   Future<void> _buscarFilmes() async {
     await _controller.buscarFilmes(_pesquisaController.text);
 
@@ -80,6 +63,25 @@ class _FilmesPageState extends State<FilmesPage> {
     if (!mounted) return;
 
     setState(() {});
+  }
+
+  void _onPesquisaAlterada(String texto) {
+    _debounce?.cancel();
+
+    if (texto.trim().isEmpty) {
+      _listarFilmes();
+      return;
+    }
+
+    _debounce = Timer(_debounceDuration, () {
+      _buscarFilmes();
+    });
+  }
+
+  void _limparPesquisa() {
+    _debounce?.cancel();
+    _pesquisaController.clear();
+    _listarFilmes();
   }
 
   Future<void> _trocarTipoLista(TipoListaFilmes tipo) async {
@@ -112,9 +114,7 @@ class _FilmesPageState extends State<FilmesPage> {
               const SizedBox(height: 12),
               _buildFiltros(),
               const SizedBox(height: _pagePadding),
-              Expanded(
-                child: _buildConteudo(),
-              ),
+              Expanded(child: _buildConteudo()),
             ],
           ),
         ),
@@ -136,19 +136,17 @@ class _FilmesPageState extends State<FilmesPage> {
         ),
       ),
       title: GestureDetector(
-        onTap: _voltarInicio,
+        onTap: () {
+          FocusScope.of(context).unfocus();
+          _voltarInicio();
+        },
         child: const Text(
           'ULBRA Filmes',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
         ),
       ),
-      actions: const [
-        SizedBox(width: 72),
-      ],
+      actions: const [SizedBox(width: 72)],
     );
   }
 
@@ -162,10 +160,7 @@ class _FilmesPageState extends State<FilmesPage> {
           titulo: 'Avaliados',
           tipo: TipoListaFilmes.maisAvaliados,
         ),
-        _buildFiltroChip(
-          titulo: 'Cartaz',
-          tipo: TipoListaFilmes.emCartaz,
-        ),
+        _buildFiltroChip(titulo: 'Cartaz', tipo: TipoListaFilmes.emCartaz),
         _buildFiltroChip(
           titulo: 'Tendências',
           tipo: TipoListaFilmes.tendencias,
@@ -176,17 +171,12 @@ class _FilmesPageState extends State<FilmesPage> {
 
   Widget _buildConteudo() {
     if (_controller.isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_controller.filmes.isEmpty) {
       return Center(
-        child: Text(
-          _controller.mensagem,
-          textAlign: TextAlign.center,
-        ),
+        child: Text(_controller.mensagem, textAlign: TextAlign.center),
       );
     }
 
@@ -215,19 +205,18 @@ class _FilmesPageState extends State<FilmesPage> {
     return ChoiceChip(
       label: Text(titulo),
       selected: selecionado,
-      onSelected: (_) => _trocarTipoLista(tipo),
+      onSelected: (_) {
+        FocusScope.of(context).unfocus();
+        _trocarTipoLista(tipo);
+      },
       selectedColor: AppColors.verdePrincipal,
       backgroundColor: AppColors.dourado.withValues(alpha: 0.20),
       labelStyle: TextStyle(
-        color: selecionado
-            ? AppColors.branco
-            : AppColors.textoPrincipal,
+        color: selecionado ? AppColors.branco : AppColors.textoPrincipal,
         fontWeight: FontWeight.w600,
       ),
       side: BorderSide(
-        color: selecionado
-            ? AppColors.verdePrincipal
-            : AppColors.dourado,
+        color: selecionado ? AppColors.verdePrincipal : AppColors.dourado,
       ),
       showCheckmark: false,
     );

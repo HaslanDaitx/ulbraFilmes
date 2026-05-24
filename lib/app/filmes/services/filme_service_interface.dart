@@ -7,7 +7,5 @@ abstract class IFilmeService {
 
   Future<DetalheFilmeEntity> buscarDetalhesFilme(String id);
 
-  Future<List<FilmeEntity>> listarFilmes(
-      TipoListaFilmes tipo,
-      );
+  Future<List<FilmeEntity>> listarFilmes(TipoListaFilmes tipo);
 }

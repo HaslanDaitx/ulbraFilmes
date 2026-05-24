@@ -8,7 +8,7 @@ class DetalheFilmeController {
 
   DetalheFilmeEntity? filme;
   bool isLoading = false;
-  String mensagem = '';
+  String mensagem = 'Carregando detalhes do filme';
 
   Future<void> buscarDetalhesFilme(String id) async {
     final idTratado = id.trim();

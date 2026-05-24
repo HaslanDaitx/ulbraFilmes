@@ -51,9 +51,13 @@ class DetalheFilmeEntity {
     return '${partes[2]}/${partes[1]}/${partes[0]}';
   }
 
-  String get posterUrl => _formatarPosterUrl(poster);
+  String get posterUrl {
+    return _formatarPosterUrl(poster);
+  }
 
-  String get notaFormatada => nota.toStringAsFixed(1);
+  String get notaFormatada {
+    return nota.toStringAsFixed(1);
+  }
 
   String get duracaoFormatada {
     if (duracao <= 0) {
@@ -88,6 +92,14 @@ double _parseDouble(dynamic value) {
   return double.tryParse(value.toString()) ?? 0;
 }
 
+List<String> _parseGeneros(dynamic value) {
+  if (value == null) {
+    return [];
+  }
+
+  return List<String>.from(value.map((genero) => genero['name'] ?? ''));
+}
+
 String _formatarAno(String dataLancamento) {
   if (dataLancamento.isEmpty) {
     return 'Não informado';
@@ -102,14 +114,4 @@ String _formatarPosterUrl(String poster) {
   }
 
   return 'https://image.tmdb.org/t/p/w500$poster';
-}
-
-List<String> _parseGeneros(dynamic value) {
-  if (value == null) {
-    return [];
-  }
-
-  return List<String>.from(
-    value.map((genero) => genero['name']),
-  );
 }

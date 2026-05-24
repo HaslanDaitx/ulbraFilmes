@@ -6,10 +6,7 @@ import '../pages/detalhe_filme_page.dart';
 class FilmeCard extends StatelessWidget {
   final FilmeEntity filme;
 
-  const FilmeCard({
-    super.key,
-    required this.filme,
-  });
+  const FilmeCard({super.key, required this.filme});
 
   bool get possuiPoster => filme.posterUrl.isNotEmpty;
 
@@ -18,13 +15,21 @@ class FilmeCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () {
-          Navigator.push(
+        onTap: () async {
+          FocusScope.of(context).unfocus();
+
+          await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => DetalheFilmePage(id: filme.id.toString()),
             ),
           );
+
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (context.mounted) {
+              FocusScope.of(context).unfocus();
+            }
+          });
         },
         child: Column(
           children: [
@@ -36,12 +41,12 @@ class FilmeCard extends StatelessWidget {
                 color: AppColors.branco.withValues(alpha: 0.45),
                 child: possuiPoster
                     ? Image.network(
-                  filme.posterUrl,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.movie, size: 48);
-                  },
-                )
+                        filme.posterUrl,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.movie, size: 48);
+                        },
+                      )
                     : const Icon(Icons.movie, size: 48),
               ),
             ),

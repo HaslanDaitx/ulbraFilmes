@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'colors.dart';
 
 class AppTheme {
@@ -26,10 +27,7 @@ class AppTheme {
         shadowColor: Colors.black.withValues(alpha: 0.22),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
-          side: const BorderSide(
-            color: AppColors.dourado,
-            width: 0.8,
-          ),
+          side: const BorderSide(color: AppColors.dourado, width: 0.8),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -40,14 +38,10 @@ class AppTheme {
           horizontal: 16,
           vertical: 16,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(
-            color: AppColors.dourado,
-          ),
+          borderSide: const BorderSide(color: AppColors.dourado),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),

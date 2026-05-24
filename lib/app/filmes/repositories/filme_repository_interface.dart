@@ -5,9 +5,7 @@ import '../entity/enum/tipo_lista_filme_enum.dart';
 abstract class IFilmeRepository {
   Future<List<FilmeEntity>> buscarFilmes(String pesquisa);
 
-  Future<List<FilmeEntity>> listarFilmes(
-      TipoListaFilmes tipo,
-      );
+  Future<List<FilmeEntity>> listarFilmes(TipoListaFilmes tipo);
 
   Future<DetalheFilmeEntity> buscarDetalhesFilme(String id);
 }

@@ -37,9 +37,7 @@ class FilmeController {
     }
   }
 
-  Future<void> listarFilmes(
-      TipoListaFilmes tipo,
-      ) async {
+  Future<void> listarFilmes(TipoListaFilmes tipo) async {
     isLoading = true;
     mensagem = '';
 

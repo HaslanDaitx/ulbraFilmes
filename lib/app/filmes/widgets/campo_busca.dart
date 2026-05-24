@@ -24,9 +24,7 @@ class CampoBusca extends StatelessWidget {
       decoration: InputDecoration(
         hintText: 'Digite o nome do filme',
         prefixIcon: const Icon(Icons.search),
-        suffixIcon: controller.text.isEmpty
-            ? null
-            : IconButton(
+        suffixIcon: IconButton(
           icon: const Icon(Icons.close),
           onPressed: onLimpar,
         ),
