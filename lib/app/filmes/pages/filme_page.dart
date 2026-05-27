@@ -78,10 +78,13 @@ class _FilmesPageState extends State<FilmesPage> {
     });
   }
 
-  void _limparPesquisa() {
+  Future<void> _limparPesquisa() async {
     _debounce?.cancel();
     _pesquisaController.clear();
-    _listarFilmes();
+
+    _tipoSelecionado = TipoListaFilmes.populares;
+
+    await _listarFilmes();
   }
 
   Future<void> _trocarTipoLista(TipoListaFilmes tipo) async {
