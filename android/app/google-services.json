@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "331565401803",
+    "project_id": "ulbra-filmes",
+    "storage_bucket": "ulbra-filmes.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:331565401803:android:e00a520f8534754fa5fd4e",
+        "android_client_info": {
+          "package_name": "com.example.ulbra_filme_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9L5-0Wd5URm7bL8wfRX8oa6xj9Ab2NWo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
