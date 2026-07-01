@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:ulbra_filmes_app/screens/detalhe_filme_screen.dart';
 
 import 'app/shared/theme/theme.dart';
 import 'firebase_options.dart';
@@ -39,6 +40,7 @@ class UlbraFilmesApp extends StatelessWidget {
         '/login': (_) => const LoginScreen(),
         '/cadastro': (_) => const CadastroScreen(),
         '/filmes': (_) => const FilmesScreen(),
+        '/detalhe-filme': (_) => const DetalheFilmeScreen(),
       },
     );
   }

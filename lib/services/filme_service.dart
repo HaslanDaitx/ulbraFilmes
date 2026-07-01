@@ -25,23 +25,42 @@ class FilmeService {
         .collection('filmes')
         .where('uid', isEqualTo: _uid)
         .get();
+
     final filmes = snapshot.docs
         .map((doc) => Filme.fromMap(doc.data(), id: doc.id))
         .toList();
+
     filmes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
     return filmes;
   }
 
   Future<void> criar(Filme filme) async {
-    await _db.collection('filmes').add({...filme.toMap(), 'uid': _uid});
+    await _db.collection('filmes').add({
+      ...filme.toMap(),
+      'uid': _uid,
+    });
+  }
+
+  Future<void> editar(Filme filme) async {
+    final reference = _db.collection('filmes').doc(filme.id);
+    final snapshot = await reference.get();
+
+    if (!snapshot.exists || snapshot.data()?['uid'] != _uid) {
+      throw StateError('Filme não encontrado.');
+    }
+
+    await reference.update(filme.toMap());
   }
 
   Future<void> remover(String id) async {
     final reference = _db.collection('filmes').doc(id);
     final snapshot = await reference.get();
+
     if (!snapshot.exists || snapshot.data()?['uid'] != _uid) {
       throw StateError('Filme não encontrado.');
     }
+
     await reference.delete();
   }
 }
