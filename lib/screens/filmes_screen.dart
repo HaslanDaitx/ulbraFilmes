@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../app/filmes/repositories/filme_repository.dart';
 import '../app/shared/theme/app_filled_button.dart';
 import '../app/shared/theme/colors.dart';
 import '../models/filme.dart';
@@ -27,6 +28,57 @@ class _FilmesScreenState extends State<FilmesScreen> {
 
   void _atualizar() {
     _filmes = _filmeService.listar();
+  }
+
+  Future<void> _buscarDadosFilme({
+    required BuildContext dialogContext,
+    required TextEditingController titulo,
+    required TextEditingController ano,
+    required TextEditingController imagemUrl,
+    required TextEditingController descricao,
+  }) async {
+    final pesquisa = titulo.text.trim();
+
+    if (pesquisa.isEmpty) {
+      _erro('Informe o título para buscar os dados.');
+      return;
+    }
+
+    try {
+      final filmesEncontrados = await FilmeRepository().buscarFilmes(pesquisa);
+
+      if (!dialogContext.mounted) return;
+
+      if (filmesEncontrados.isEmpty) {
+        _erro('Nenhum filme encontrado.');
+        return;
+      }
+
+      final filmeApi = filmesEncontrados.first;
+
+      titulo.text = filmeApi.titulo;
+
+      final anoEncontrado = int.tryParse(filmeApi.ano);
+      if (anoEncontrado != null) {
+        ano.text = anoEncontrado.toString();
+      }
+
+      if (filmeApi.posterUrl.isNotEmpty) {
+        imagemUrl.text = filmeApi.posterUrl;
+      }
+
+      if (filmeApi.sinopse.isNotEmpty) {
+        descricao.text = filmeApi.sinopse;
+      }
+
+      ScaffoldMessenger.of(dialogContext).showSnackBar(
+        const SnackBar(
+          content: Text('Informações encontradas com sucesso!'),
+        ),
+      );
+    } catch (_) {
+      _erro('Não foi possível buscar os dados do filme.');
+    }
   }
 
   Future<void> _abrirDetalhes(Filme filme) async {
@@ -76,18 +128,42 @@ class _FilmesScreenState extends State<FilmesScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextFormField(
-                    controller: titulo,
-                    decoration: const InputDecoration(labelText: 'Título'),
-                    validator: _obrigatorio,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Título',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        controller: titulo,
+                        decoration: InputDecoration(
+                          hintText: 'Digite o título do filme',
+                          suffixIcon: IconButton(
+                            tooltip: 'Buscar informações',
+                            icon: const Icon(Icons.search),
+                            onPressed: () => _buscarDadosFilme(
+                              dialogContext: context,
+                              titulo: titulo,
+                              ano: ano,
+                              imagemUrl: imagemUrl,
+                              descricao: descricao,
+                            ),
+                          ),
+                        ),
+                        validator: _obrigatorio,
+                      ),
+                    ],
                   ),
                 const SizedBox(height: 12),
-                TextFormField(
-                  controller: ano,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Ano'),
-                  validator: _validarAno,
-                ),
+                  TextFormField(
+                    controller: ano,
+                    readOnly: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Ano',
+                    ),
+                  ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: genero,
@@ -96,21 +172,11 @@ class _FilmesScreenState extends State<FilmesScreen> {
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
-                  controller: imagemUrl,
-                  keyboardType: TextInputType.url,
-                  decoration: const InputDecoration(
-                    labelText: 'URL da imagem',
-                    hintText: 'Opcional',
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
                   controller: descricao,
                   minLines: 3,
                   maxLines: 5,
                   decoration: const InputDecoration(
-                    labelText: 'Descrição',
-                    hintText: 'Opcional',
+                    labelText: 'Sinopse',
                   ),
                 ),
               ],
@@ -173,16 +239,6 @@ class _FilmesScreenState extends State<FilmesScreen> {
   String? _obrigatorio(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Este campo é obrigatório.';
-    }
-
-    return null;
-  }
-
-  String? _validarAno(String? value) {
-    final numero = int.tryParse(value ?? '');
-
-    if (numero == null || numero < 1888 || numero > 2100) {
-      return 'Informe um ano válido.';
     }
 
     return null;

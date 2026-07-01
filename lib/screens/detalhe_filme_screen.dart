@@ -22,115 +22,6 @@ class _DetalheFilmeScreenState extends State<DetalheFilmeScreen> {
     filme = ModalRoute.of(context)!.settings.arguments as Filme;
   }
 
-  Future<void> _editar() async {
-    final titulo = TextEditingController(text: filme.titulo);
-    final ano = TextEditingController(text: filme.ano.toString());
-    final genero = TextEditingController(text: filme.genero);
-    final imagemUrl = TextEditingController(text: filme.imagemUrl);
-    final descricao = TextEditingController(text: filme.descricao);
-    final formKey = GlobalKey<FormState>();
-
-    final filmeEditado = await showDialog<Filme>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.fundo,
-        title: const Text('Editar filme'),
-        content: Form(
-          key: formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: titulo,
-                  decoration: const InputDecoration(labelText: 'Título'),
-                  validator: _obrigatorio,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: ano,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Ano'),
-                  validator: _validarAno,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: genero,
-                  decoration: const InputDecoration(labelText: 'Gênero'),
-                  validator: _obrigatorio,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: imagemUrl,
-                  keyboardType: TextInputType.url,
-                  decoration: const InputDecoration(
-                    labelText: 'URL da imagem',
-                    hintText: 'Opcional',
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: descricao,
-                  minLines: 3,
-                  maxLines: 5,
-                  decoration: const InputDecoration(
-                    labelText: 'Sinopse',
-                    hintText: 'Opcional',
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              if (!formKey.currentState!.validate()) return;
-
-              FocusManager.instance.primaryFocus?.unfocus();
-
-              final atualizado = filme.copyWith(
-                titulo: titulo.text.trim(),
-                ano: int.parse(ano.text),
-                genero: genero.text.trim(),
-                imagemUrl: imagemUrl.text.trim(),
-                descricao: descricao.text.trim(),
-              );
-
-              await Future.delayed(const Duration(milliseconds: 100));
-
-              if (!context.mounted) return;
-
-              Navigator.pop(context, atualizado);
-            },
-            child: const Text('Salvar'),
-          ),
-        ],
-      ),
-    );
-
-    if (filmeEditado == null) return;
-
-    try {
-      await _filmeService.editar(filmeEditado);
-
-      if (!mounted) return;
-
-      setState(() => filme = filmeEditado);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Filme atualizado com sucesso.')),
-      );
-    } catch (_) {
-      _erro('Não foi possível editar o filme.');
-    }
-  }
-
   Future<void> _excluir() async {
     final confirmou = await showDialog<bool>(
       context: context,
@@ -163,24 +54,6 @@ class _DetalheFilmeScreenState extends State<DetalheFilmeScreen> {
     }
   }
 
-  String? _obrigatorio(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Este campo é obrigatório.';
-    }
-
-    return null;
-  }
-
-  String? _validarAno(String? value) {
-    final numero = int.tryParse(value ?? '');
-
-    if (numero == null || numero < 1888 || numero > 2100) {
-      return 'Informe um ano válido.';
-    }
-
-    return null;
-  }
-
   void _erro(String mensagem) {
     if (!mounted) return;
 
@@ -195,11 +68,6 @@ class _DetalheFilmeScreenState extends State<DetalheFilmeScreen> {
       appBar: AppBar(
         title: Text(filme.titulo),
         actions: [
-          IconButton(
-            tooltip: 'Editar',
-            onPressed: _editar,
-            icon: const Icon(Icons.edit_outlined),
-          ),
           IconButton(
             tooltip: 'Excluir',
             onPressed: _excluir,
